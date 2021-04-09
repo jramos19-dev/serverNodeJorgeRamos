@@ -11,8 +11,7 @@ const noteSchema = joi.object({
 
 export const getAll = async () => {
   const notes = await db('notes')
-  logger.info('Getting all the notes')
-  logger.info(notes)
+  
   return notes
 }
 
