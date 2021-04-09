@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import knex from 'knex'
 
 import joi from 'joi'
 
@@ -8,6 +8,30 @@ const noteSchema = joi.object({
   title: joi.string().required().min(3).max(20),
   content: joi.string().required().min(5).max(30),
 })
+
+const db = knex({
+  client: process.env.DB_TYPE,
+  connection: {
+    filename: process.env.DB_FILE,
+  },
+  useNullAsDefault: true,
+})
+
+const createTables = async () => {
+  const notesTableExist = await db.schema.hasTable('notes')
+  if (!notesTableExist) {
+    await db.schema.createTable('notes', (table) => {
+      table.increments('id').primary()
+      table.string('title')
+      table.string('content')
+      table.timestamps()
+    })
+  }
+}
+
+createTables()
+
+export default db
 
 let notes = []
 
